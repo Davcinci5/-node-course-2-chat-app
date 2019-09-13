@@ -21,47 +21,33 @@ io.on('connection', (socket) => {
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
 
-    
-    // socket.emit('newMessage', {
-    //     from: 'Admin',
-    //     text: 'Welcome to the chat app',
-    //     createdAt: new Date().getTime()
-    //    });
 
-    //new message
-    // socket.emit('newMessage', {
-    //     from: 'John',
-    //     text: 'See you then',
-    //     createdAt: 123123
-    //    });
 
     // Creating a message 
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message,callback) => {
         console.log('createMessage', message);
+        io.emit('newMessage', generateMessage(message.from, message.text));
+        callback('This is from the server.');
 
 
-    //io.emit emits an event to every single connection
-    io.emit('newMessage', generateMessage('Admin', 'New user joined'));
+    //     // MADE USE OF BROADCAST
 
+    //     // socket.broadcast.emit('newMessage', {
+    //     //     from: message.from,
+    //     //     text: message.text,
+    //     //     createdAt: new Date().getTime()
+    //     //    });
 
-        // MADE USE OF BROADCAST
-
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().getTime()
-        //    });
-
-        // socket.broadcast.emit from Admin text New user joined
-            socket.broadcast.emit('newMessage', {
-                from: 'Admin',
-                text: 'New user joined',
-                createdAt: new Date().getTime()
-            })
+    //     // socket.broadcast.emit from Admin text New user joined
+    //         // socket.broadcast.emit('newMessage', {
+    //         //     from: 'Admin',
+    //         //     text: 'New user joined',
+    //         //     createdAt: new Date().getTime()
+    //         // })
 
 
 
-       });       
+        });       
 
     // socket.emit('newEmail', {
     //     from: 'mike@example.com',
@@ -69,10 +55,12 @@ io.on('connection', (socket) => {
     //     createdAt: 123
     //    });
 
-       socket.on('createEmail', (newEmail) => {
-            console.log('createEmail', newEmail);
-        });
+    socket.on('createEmail', (newEmail) => {
+        console.log('createEmail', newEmail);
+    });
       
+
+
     socket.on('disconnect', () => {
         console.log('User was disconnected');
     });
