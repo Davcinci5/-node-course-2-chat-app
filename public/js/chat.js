@@ -119,9 +119,7 @@ var socket = io();
                 // if the scrollTop plus the clientHeight is greater than or equal to
                 //the scrollHeight. If it is, then we want to go ahead and scroll the user to the bottom
                 //because we know they're already near the bottom
-                if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
-                    console.log("entro");
-                    
+                if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {           
                     messages.scrollTop(scrollHeight);
                 }
         }
