@@ -29,11 +29,21 @@ var socket = io();
 
     
    socket.on('newMessage', function (message) {
-        console.log('newMessage', message);
-        var formattedTime = moment(message.createAt).format('h:mm a');
-        var li = jQuery('<li></li>');
-        li.text(`${message.from} ${formattedTime}: ${message.text}`);
-        jQuery('#messages').append(li);
+       //Implementing the Mustache.js rendering method
+    var formattedTime = moment(message.createAt).format('h:mm a');
+    var template = jQuery('#message-template').html();
+    var html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+       });
+    jQuery('#messages').append(html);
+        scrollToBottom();
+        // console.log('newMessage', message);
+        // var formattedTime = moment(message.createAt).format('h:mm a');
+        // var li = jQuery('<li></li>');
+        // li.text(`${message.from} ${formattedTime}: ${message.text}`);
+        // jQuery('#messages').append(li);
     });
 
     
@@ -58,17 +68,21 @@ var socket = io();
                         });
        });
        
-    socket.on('newLocationMessage', function (message) {
+       socket.on('newLocationMessage', function(message) {
         var formattedTime = moment(message.createdAt).format('h:mm a');
-        var li = jQuery('<li></li>');
-        li.text = formattedTime;
-        li.text(`${message.from} ${formattedTime}: `);
-        var a = jQuery('<a target="_blank">My current location</a>');
-            a.attr('href', message.url);
-            li.append(a);
-            jQuery('#messages').append(li);
-    });
+        var template = jQuery('#location-message-template').html();
+        var html = Mustache.render(template, {
+            from: message.from,
+            url: message.url,
+            createdAt: formattedTime
+        });
+        jQuery('#messages').append(html);
+        scrollToBottom();
+       });
 
+
+       //Stops normal flow of form, get the message emit, that new message
+       // and create a callback which clean up the text box
     jQuery('#message-form').on('submit', function (e) {
         e.preventDefault();
         var messageTextbox = jQuery('[name=message]');
@@ -80,8 +94,37 @@ var socket = io();
         });
        });
        
-    
+// Function it's going to determine whether or not we should scroll 
+// the user to the bottom depending on their position    
+        function scrollToBottom () {
+            
+            
+            // Selectors
+            var messages = jQuery('#messages');
+            var newMessage = messages.children('li:last-child');
+            // Heights
+                // 'prop' method  gives us a cross-browser 
+                // way to fetch a property
+                var clientHeight = messages.prop('clientHeight');
+                var scrollTop = messages.prop('scrollTop');
+                var scrollHeight = messages.prop('scrollHeight');
 
+                    //This is going to calculate the height of 
+                    //the message taking into account the padding
+                     //that we've also applied via CSS.
+                var newMessageHeight = newMessage.innerHeight();
+
+                var lastMessageHeight = newMessage.prev().innerHeight();
+
+                // if the scrollTop plus the clientHeight is greater than or equal to
+                //the scrollHeight. If it is, then we want to go ahead and scroll the user to the bottom
+                //because we know they're already near the bottom
+                if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+                    console.log("entro");
+                    
+                    messages.scrollTop(scrollHeight);
+                }
+        }
        
        
 
